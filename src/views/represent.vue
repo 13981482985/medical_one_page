@@ -173,7 +173,7 @@
         >
           <el-form-item label="选择算法模型" prop="algoName">
             <el-row :gutter="60">
-              <h5 class="text">无监督类算法</h5>
+              <h5 class="text">算法类别</h5>
               <br />
               <el-radio-group
                 v-model="algoForm.formData.algoName"
@@ -191,7 +191,7 @@
               </el-radio-group>
             </el-row>
             <br />
-            <el-row :gutter="60">
+            <!-- <el-row :gutter="60">
               <h5 class="text">有监督类算法</h5>
               <br />
               <el-radio-group
@@ -209,7 +209,7 @@
                 </el-col>
               </el-radio-group>
             </el-row>
-            <br />
+            <br /> -->
             <!-- <el-row :gutter="60">
               <h5 class="text">深度学习算法</h5>
               <br />
@@ -291,35 +291,35 @@ export default {
           algoType: "1",
         },
       ],
-      algoOptions2: [
-        {
-          id: 4,
-          algoName: "LDA(线性判别分析)",
-          algoType: "2",
-        },
-        {
-          id: 5,
-          algoName: "稀疏表示学习",
-          algoType: "2",
-        },
-        {
-          id: 6,
-          algoName: "神经网络",
-          algoType: "2",
-        },
-      ],
-      algoOptions3: [
-        {
-          id: 7,
-          algoName: "CNN(卷积神经网络)",
-          algoType: "3",
-        },
-        {
-          id: 8,
-          algoName: "RNN(循环神经网络)",
-          algoType: "3",
-        },
-      ],
+      // algoOptions2: [
+      //   {
+      //     id: 4,
+      //     algoName: "LDA(线性判别分析)",
+      //     algoType: "2",
+      //   },
+      //   {
+      //     id: 5,
+      //     algoName: "稀疏表示学习",
+      //     algoType: "2",
+      //   },
+      //   {
+      //     id: 6,
+      //     algoName: "神经网络",
+      //     algoType: "2",
+      //   },
+      // ],
+      // algoOptions3: [
+      //   {
+      //     id: 7,
+      //     algoName: "CNN(卷积神经网络)",
+      //     algoType: "3",
+      //   },
+      //   {
+      //     id: 8,
+      //     algoName: "RNN(循环神经网络)",
+      //     algoType: "3",
+      //   },
+      // ],
       value1: [],
       value2: [],
       chartDatay: [],
@@ -522,6 +522,11 @@ export default {
           }
         }
       } else if (stepIndex == 2) {
+        if(this.algoForm.formData.algoName==""){
+          this.open3("请选择分析算法");
+          this.active--;
+          return;
+        }
         let params = {};
         if(this.taskInfoParam == null || Object.keys(this.taskInfoParam).length == 0){
           params = {
@@ -568,6 +573,7 @@ export default {
       this.$refs[formName].resetFields();
     },
     stepBack(stepIndex) {
+      // this.dataNewColumns = [];
       if (this.active - 1 >= 0) {
         if (this.active == 1) {
           this.dataInOptions = [];

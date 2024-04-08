@@ -262,7 +262,6 @@ export default {
       this.showChart = !this.showChart;
     },
     drawChart() {
-      alert("开始画图")
       var option;
       let myChart = echarts.init(document.getElementById("chart"));
       
@@ -532,7 +531,6 @@ export default {
             return;
           })
         }else{
-          alert("任务转过来")
           tableName = this.taskInfoParm.label;
           select = this.taskInfoParm.select
         }
@@ -586,7 +584,6 @@ export default {
         }
         this.kidneyAbnormal = count;
         this.liverAbnormal = count1;
-        alert("正常")
         this.drawChart();
       }
     },
@@ -595,7 +592,6 @@ export default {
       this.$refs[formName].resetFields();
     },
     stepBack(stepIndex) {
-      // alert("stepIndex:"+stepIndex)
       if (this.active - 1 >= 0) {
         if (this.active == 1) {
           this.tableData = [];
@@ -660,7 +656,6 @@ export default {
   created() {
     this.taskInfoParm = this.$route.params
     if(this.taskInfoParm == null || Object.keys(this.taskInfoParm).length==0){
-       alert("传过来是空")
        this.getAllData();
     }else{
       this.dataSelectForm.isShow = false;

@@ -67,6 +67,7 @@
               :label="item"
               :prop="item"
               width="150"
+              :formatter="function(row) { return formatNumber(row[item]); }"
             >
             </el-table-column>
           </el-table>
@@ -113,6 +114,12 @@ export default {
     };
   },
   methods: {
+    formatNumber(value) {
+      if (typeof value === 'number') {
+        return value.toFixed(2); // 保留两位小数
+      }
+      return value;
+    },
     drawChart() {
       let myChart1 = echarts.init(document.getElementById("chart1"));
       let myChart2 = echarts.init(document.getElementById("chart2"));
@@ -185,7 +192,6 @@ export default {
       myChart2.setOption(option2);
     },
     dealdata() {
-
       this.dataColumn = this.columnName;
       this.allPage = this.dataChoose.total * 10;
       this.dataChooseNow = this.dataChoose.data;
