@@ -25,7 +25,7 @@
         <div class="right">
             <div class="info">
               <el-alert
-                title="特征下方进度条为特征缺失度"
+                title="特征下方进度条为特征数据完备率"
                 type="info"
                 center
                 show-icon>
