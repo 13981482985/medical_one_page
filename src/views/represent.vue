@@ -17,7 +17,10 @@
             >
             </oldData>
             <div class="button1" v-if="oldShow">
-              <el-button size="small" @click="stepBack(active)" class="el-button--primary"
+              <el-button
+                size="small"
+                @click="stepBack(active)"
+                class="el-button--primary"
                 >上一步</el-button
               >
             </div>
@@ -33,7 +36,10 @@
               :chartDatay="chartDatay"
             ></newData>
             <div class="button1" v-if="newShow">
-              <el-button size="small" @click="stepBack(active)" class="el-button--primary"
+              <el-button
+                size="small"
+                @click="stepBack(active)"
+                class="el-button--primary"
                 >上一步</el-button
               >
             </div>
@@ -209,8 +215,9 @@
                 </el-col>
               </el-radio-group>
             </el-row>
+            <br />
             <br /> -->
-            <!-- <el-row :gutter="60">
+            <el-row :gutter="60">
               <h5 class="text">深度学习算法</h5>
               <br />
               <el-radio-group
@@ -228,7 +235,7 @@
                   }}</el-radio>
                 </el-col>
               </el-radio-group>
-            </el-row> -->
+            </el-row>
           </el-form-item>
           <br />
           <div class="button1">
@@ -263,7 +270,7 @@ export default {
       head1: true,
       head2: false,
       showStep: true,
-      oldShow: true,
+      oldShow: false,
       newShow: false,
       dataOptions: [],
       dataInOptions: [],
@@ -376,26 +383,28 @@ export default {
         },
       },
       dataAll: [],
-      dataChoose: [],
+      dataChoose: {},
       // dataNew: [],
       statisData: [],
     };
   },
   created() {
     this.taskInfoParam = this.$route.params;
-    if(this.taskInfoParam == null || Object.keys(this.taskInfoParam).length==0){
+    if (
+      this.taskInfoParam == null ||
+      Object.keys(this.taskInfoParam).length == 0
+    ) {
       this.getAllData();
-    }else{
+    } else {
       this.dataSelectForm.isShow = false;
       this.columnSelectForm.isShow = false;
       this.algoForm.isShow = false;
-      this.head2  = true;
+      this.head2 = true;
       // this.oldShow = true;
-      this.showStep  = false
-      this.getAllData()
-      this.submitForm(2)
+      this.showStep = false;
+      this.getAllData();
+      this.submitForm(2);
     }
-    
   },
   methods: {
     open3(msg) {
@@ -405,10 +414,118 @@ export default {
       });
     },
     getTableName(tableName) {
-      console.log("表明", tableName);
       this.dataSelectForm.formData.selectedData = tableName;
     },
-    submitForm(stepIndex) {
+    async getFirstPageData(tableName) {
+      const response = await getRequest(
+        "/feature/getInfoByTableName?tableName=" + tableName + "&page=" + 1
+      );
+      this.dataAll = response;
+    },
+    async getStasticData(tableName) {
+      const response = await getRequest(
+        "/feature/getStatisticaldData/" + tableName
+      );
+      this.statisData = response.data;
+    },
+    async getAllfilled(tableName) {
+      const response = await getRequest("/feature/getAllFiled/" + tableName);
+      this.demoOptions = [];
+      this.physioOptions = [];
+      this.sociolOptions = [];
+      this.otherOptions = [];
+      let data = response.data;
+      let columnNametemp = Object.keys(data);
+      for (let i = 0; i < columnNametemp.length; i++) {
+        if (data[columnNametemp[i]] != null) {
+          const obj = {
+            columnName: data[columnNametemp[i]].featureName,
+          };
+          if (data[columnNametemp[i]].isDemography == true) {
+            // 人口学
+
+            obj.columnisR = true;
+          } else {
+            obj.columnisR = false;
+          }
+          if (data[columnNametemp[i]].isSociology == true) {
+            // 社会学
+
+            obj.columnisX = true;
+          } else {
+            obj.columnisX = false;
+          }
+          if (data[columnNametemp[i]].isPhysiological == true) {
+            // 生理指标
+
+            obj.columnisS = true;
+          } else {
+            obj.columnisS = false;
+          }
+          if (!obj.columnisR && !obj.columnisS && !obj.columnisX) {
+            // 其他
+
+            obj.columnisO = true;
+          } else {
+            obj.columnisO = false;
+          }
+
+          if (obj.columnisR == true) {
+            this.demoOptions.push(obj);
+          }
+
+          if (obj.columnisS == true) {
+            this.physioOptions.push(obj);
+          }
+
+          if (obj.columnisX == true) {
+            this.sociolOptions.push(obj);
+          }
+
+          if (obj.columnisO == true) {
+            this.otherOptions.push(obj);
+          }
+
+          this.dataInOptions.push(obj);
+        }
+      }
+    },
+    async getOutcome(params) {
+      try {
+        const response = await postRequest("feature/runAi", params);
+
+        for (let i in response.data[0]) {
+          var num = parseInt(i) + 1;
+          this.dataNewColumns.push("主成分" + num);
+          this.dataNew["主成分" + num] = response.data[0][i];
+        }
+        for (let i in response.data[1]) {
+          this.chartDatay.push(response.data[1][i]);
+        }
+        if (this.taskInfoParam == null) {
+          this.head1 = !this.head1;
+          this.head2 = !this.head2;
+          this.showStep = !this.showStep;
+        }
+        this.oldShow=true
+      } catch (error) {
+        console.log(error);
+        this.active--;
+      }
+    },
+    async getDataChoose(page, tableName, params) {
+      const response = await getRequest(
+        "/feature/getInfoBySelectedFiled?page=" +
+          page +
+          "&tableName=" +
+          tableName +
+          "&params=" +
+          params
+      );
+      console.log('datachoose_response',response)
+      this.dataChoose = response;
+    },
+    async submitForm(stepIndex) {
       let formName = this.formArray[stepIndex];
       this.active++;
       if (stepIndex < 2) {
@@ -416,92 +533,16 @@ export default {
         if (this.active == 1) {
           this[formName].isShow = false;
           this[nextFormName].isShow = true;
-          let tableName = this.dataSelectForm.formData;
-          getRequest("/feature/getAllFiled/" + tableName.selectedData).then(
-            (response) => {
-              this.demoOptions = [];
-              this.physioOptions = [];
-              this.sociolOptions = [];
-              this.otherOptions = [];
-              let data = response.data;
-              console.log("data", data);
-              let columnNametemp = Object.keys(data);
-              for (let i = 0; i < columnNametemp.length; i++) {
-                if (data[columnNametemp[i]] != null) {
-                  const obj = {
-                    columnName: data[columnNametemp[i]].featureName,
-                  };
-                  if (data[columnNametemp[i]].isDemography == true) {
-                    // 人口学
-                    console.log("人口学");
-                    obj.columnisR = true;
-                  } else {
-                    obj.columnisR = false;
-                  }
-                  if (data[columnNametemp[i]].isSociology == true) {
-                    // 社会学
-                    console.log("社会学");
-                    obj.columnisX = true;
-                  } else {
-                    obj.columnisX = false;
-                  }
-                  if (data[columnNametemp[i]].isPhysiological == true) {
-                    // 生理指标
-                    console.log("生理指标");
-                    obj.columnisS = true;
-                  } else {
-                    obj.columnisS = false;
-                  }
-                  if (!obj.columnisR && !obj.columnisS && !obj.columnisX) {
-                    // 其他
-                    console.log("其他指标");
-                    obj.columnisO = true;
-                  } else {
-                    obj.columnisO = false;
-                  }
-
-                  if (obj.columnisR == true) {
-                    this.demoOptions.push(obj);
-                  }
-
-                  if (obj.columnisS == true) {
-                    this.physioOptions.push(obj);
-                  }
-
-                  if (obj.columnisX == true) {
-                    this.sociolOptions.push(obj);
-                  }
-
-                  if (obj.columnisO == true) {
-                    this.otherOptions.push(obj);
-                  }
-
-                  this.dataInOptions.push(obj);
-                }
-              }
-            }
-          );
-          getRequest(
-            "/feature/getInfoByTableName?tableName=" +
-              tableName.selectedData +
-              "&page=" +
-              1
-          ).then((response) => {
-            this.dataAll = response;
-          });
-          getRequest(
-            "/feature/getStatisticaldData/" + tableName.selectedData
-          ).then((response) => {
-            console.log("测试.....");
-            console.log(response);
-            this.statisData = response.data;
-          });
+          let tableName = this.dataSelectForm.formData.selectedData;
+          this.getAllfilled(tableName);
+          this.getFirstPageData(tableName);
+          this.getStasticData(tableName);
         }
         if (this.active == 2) {
           const page = 1;
           if (
             this.columnSelectForm.formData.selectedData == null ||
-            this.columnSelectForm.formData.selectedData.length <=1
+            this.columnSelectForm.formData.selectedData.length <= 1
           ) {
             this.open3("选择的属性列必须为多选！"); // TODO 控制下一步跳转
             this.active--;
@@ -509,16 +550,11 @@ export default {
           } else {
             this[formName].isShow = false;
             this[nextFormName].isShow = true;
-            getRequest(
-              "/feature/getInfoBySelectedFiled?page=" +
-                page +
-                "&tableName=" +
-                this.dataSelectForm.formData.selectedData +
-                "&params=" +
-                this.columnSelectForm.formData.selectedData
-            ).then((response) => {
-              this.dataChoose = response;
-            });
+            await this.getDataChoose(
+              page,
+              this.dataSelectForm.formData.selectedData,
+              this.columnSelectForm.formData.selectedData
+            );
           }
         }
       } else if (stepIndex == 2) {
@@ -528,44 +564,44 @@ export default {
           return;
         }
         let params = {};
-        if(this.taskInfoParam == null || Object.keys(this.taskInfoParam).length == 0){
+        if (
+          this.taskInfoParam == null ||
+          Object.keys(this.taskInfoParam).length === 0
+        ) {
           params = {
             tableName: this.dataSelectForm.formData.selectedData, //模型选择的数据表表名
             runParams: this.columnSelectForm.formData.selectedData, //模型选择的属性列（数组）
             // modelAlgo: this.algoForm.formData.algoName, //模型选择的算法名
             aiName: "pca",
           };
-        }else{
+          this.getOutcome(params);
+        } else {
+          this.head1 = false;
           params = {
             tableName: this.taskInfoParam.tableName, //模型选择的数据表表名
-            runParams: this.taskInfoParam.runParams, //模型选择的属性列（数组）
-            aiName: this.taskInfoParam.runParams,
-          }
+            runParams: this.taskInfoParam.runParams.split(","), //模型选择的属性列（数组）
+            aiName: this.taskInfoParam.aiName,
+          };
+          this.dataSelectForm.formData.selectedData= this.taskInfoParam.tableName
+          this.columnSelectForm.formData.selectedData=this.taskInfoParam.runParams.split(",")
+          await this.getAllfilled(this.taskInfoParam.tableName);
+          await this.getFirstPageData(this.taskInfoParam.tableName);
+          await this.getStasticData(this.taskInfoParam.tableName);
+          await this.getDataChoose(
+            1,
+            this.taskInfoParam.tableName,
+            params.runParams
+          );
+          await this.getOutcome(params);
         }
-        postRequest("feature/runAi", params)
-          .then((response) => {
-            for (let i in response.data[0]) {
-              var num = parseInt(i) + 1;
-              this.dataNewColumns.push("主成分" + num);
-              this.dataNew["主成分" + num] = response.data[0][i];
-            }
-            for (let i in response.data[1]) {
-              this.chartDatay.push(response.data[1][i]);
-            }
-            this.head1 = !this.head1;
-            this.head2 = !this.head2;
-            this.showStep = !this.showStep;
-          })
-          .catch((error) => {
-            console.log(error);
-            this.active--;
-          });
-      } 
-      if(this.activeName=='first'){
-               this.oldShow = true;
       }
-        if(this.activeName=='second'){
-               this.newShow = true;
+      if (this.activeName == "first") {
+        this.oldShow = true;
+        this.newShow=false;
+      }
+      if (this.activeName == "second") {
+        this.newShow = true;
+        this.oldShow=false;
       }
     },
     resetForm(stepIndex) {

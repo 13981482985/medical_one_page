@@ -32,7 +32,6 @@ server.interceptors.response.use(
   response => {
     // 对响应数据进行处理
     const res = response.data
-    console.log(response);
     let msg = res.msg || '未知错误，请联系管理员'
     if (response.status === 200) { //这里对返回数据进行处理，要符合返回数据的数据结构
       msg = res

@@ -238,7 +238,7 @@ export default {
       }
     },
   },
-  mounted() {
+  created() {
     this.dealdata();
   },
 };
@@ -249,6 +249,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  width:auto;
 }
 .table1 {
  width:1000px;

@@ -56,6 +56,7 @@ export default ({
     methods:{
       fillData(){
         let dataFillMethodVo = {};
+        console.log('missing',this)
         console.log("missCompleteMethod",this.missCompleteMehtod)
         if(Object.keys(this.taskInfoParam).length>0){
           console.log("开始创建参数....")

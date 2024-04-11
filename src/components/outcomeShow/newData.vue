@@ -200,6 +200,12 @@ export default {
       this.dataColumn = this.columnName;
       this.allPage = this.dataChoose.total * 10;
       this.dataChooseNow = this.dataChoose.data;
+<<<<<<< HEAD
+=======
+      console.log('dataChooseNow',this.dataChooseNow)
+      // this.allPage2=this.dataNew.total*10;
+      // this.dataNewNow=this.dataNew.data;
+>>>>>>> ada00e1968a633cab5fe6bdb367909d4ec89446e
 
       for (let i in this.dataNew[this.dataNewColumns[0]]) {
         var tempObj = {};
