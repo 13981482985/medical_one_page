@@ -105,3 +105,15 @@ export function addVisliazationTask(url, tableName, selectDisease) {
     }
   });
 }
+
+export function exportDimensionalityReduction(url, newFeatureNames, oldFeatureNames, data) {
+  return request({
+    method: "get",
+    url,
+    params: {
+      newFeatureNames: newFeatureNames,
+      oldFeatureNames: oldFeatureNames,
+      data: JSON.stringify(data)
+    }
+  });
+}

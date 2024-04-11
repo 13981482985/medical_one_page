@@ -82,7 +82,7 @@ export default defineComponent({
   props: ['active', 'label', 'groupFeat', 'observeFeat'],
   data() {
     return {
-         featureName: this.groupFeat.featureName,
+        //  featureName: this.groupFeat.featureName,
          allData: [],
          binData1:[],
          binData2:[],
@@ -117,8 +117,6 @@ export default defineComponent({
            colNames.push(this.taskInfoParam.features[1]);
            label = this.taskInfoParam.label;
         }
-        console.log("后端表名：",label)
-        console.log("后端列名：",colNames)
         getSingleAnalyze("/api/singleFactorAnalyze",label,colNames.join(",")).then(response=>{ // 传递表名、分组列名、观察列名
             // 分析表格数据
             this.tableData = response.data.discreteVos;

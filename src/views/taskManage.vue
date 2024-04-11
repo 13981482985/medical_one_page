@@ -165,8 +165,8 @@
         </div>
 
         <span slot="footer" class="dialog-footer">
-          <el-button @click="resultDialogShow = false">关 闭</el-button>
           <el-button @click="getTaskDetail()">详细信息</el-button>
+          <el-button @click="resultDialogShow = false">关 闭</el-button>
         </span>
       </el-dialog>
     </div>

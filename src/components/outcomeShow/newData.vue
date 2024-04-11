@@ -4,7 +4,7 @@
       <div>
         <div class="table1" >
 
-          <p class="text">选择的原始数据:</p>
+          <p class="text">选择的原始数据</p>
           <br />
           <el-table
             :data="dataChooseNow"
@@ -28,6 +28,9 @@
               :prop="item"
               width="150"
             >
+             <template slot-scope="{ row }">
+                <div style="text-align: center;">{{ row[item] }}</div>
+              </template>
             </el-table-column>
           </el-table>
       
@@ -45,7 +48,7 @@
         </div>
         <br />
         <div class="table1">
-          <p class="text">处理后的数据:</p>
+          <p class="text">处理后的数据 <!--<el-button style="margin-left:20px; background:green" size="small" type="primary" @click="exportData()">导 出</el-button>--></p>
           <br />
           <el-table
             :data="dataNewNow"
@@ -66,9 +69,10 @@
               :key="index"
               :label="item"
               :prop="item"
-              width="150"
-              :formatter="function(row) { return formatNumber(row[item]); }"
-            >
+              width="150">
+              <template slot-scope="{ row }">
+                <div style="text-align: center;">{{ formatNumber(row[item]) }}</div>
+              </template>
             </el-table-column>
           </el-table>
         </div>
@@ -91,6 +95,7 @@
 <script>
 import * as echarts from "echarts";
 import { getRequest } from "@/utils/api";
+import { exportDimensionalityReduction } from "@/api/user"
 export default {
   name: "newData",
   props: [
@@ -195,8 +200,6 @@ export default {
       this.dataColumn = this.columnName;
       this.allPage = this.dataChoose.total * 10;
       this.dataChooseNow = this.dataChoose.data;
-      // this.allPage2=this.dataNew.total*10;
-      // this.dataNewNow=this.dataNew.data;
 
       for (let i in this.dataNew[this.dataNewColumns[0]]) {
         var tempObj = {};
@@ -225,10 +228,23 @@ export default {
     //   this.currentPage2 = val;
     //   this
     // },
+
+    // 导出降维后的数据
+    exportData(){
+      exportDimensionalityReduction("/api/exportDimensionalityReduction",this.dataColumn.join(","), this.dataNewColumns.join(","), this.dataNewNow).then(response=>{
+
+      }).catch(error=>{
+
+      })
+    },
   },
   mounted() {
     this.drawChart();
     this.dealdata();
+    // 导出降维后的数据只需要给后端传递列名和降维后的几个列数据以及列名
+     console.log("新数据：",this.dataNewNow)
+     console.log("老数据",this.dataChooseNow)
+     console.log("列名：",this.dataColumn)
   },
 };
 </script>
