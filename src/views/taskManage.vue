@@ -141,27 +141,10 @@
             </div>
           </div>
         </div>
-        <div class="taskInfoBox target_features">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">目标因素：</span>
-          <span>{{ result.targetcolum }}</span>
-        </div>
         <div class="taskInfoBox use_features">
           <span class="lineStyle">▍</span
           ><span class="featureTitle">所用特征：</span>
           <span>{{ result.feature }}</span>
-        </div>
-        <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">挖掘结果：</span>
-          <div v-for="(item, index) in result.res" :key="index">
-            <span>{{ result.targetcolum[index] }} -> {{ item }}</span>
-          </div>
-        </div>
-        <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">专家知识匹配度：</span>
-          <span>{{ (result.ratio * 100).toFixed(2) }}%</span>
         </div>
 
         <span slot="footer" class="dialog-footer">
@@ -216,6 +199,7 @@ export default {
           this.$router.push({ name: 'missingoutcome', params: paramData});
         }
         if(this.curTaskInfo.taskname==='单因素分析'){
+          console.log('this.curTaskInfo.taskname',this.curTaskInfo)
           let features = this.curTaskInfo.feature.split(",");
           let paramData = {"features": features,"label": this.curTaskInfo.dataset}
           this.$router.push({ name: 'singleOutcome', params: paramData});
@@ -250,7 +234,7 @@ export default {
       var that = this;
       getRequest("/Task/all")
         .then((res) => {
-            console.log("返回值：",res.data)
+
           that.taskList = res.data;
         })
         .catch((err) => {

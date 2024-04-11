@@ -82,7 +82,7 @@ export default defineComponent({
   props: ['active', 'label', 'groupFeat', 'observeFeat'],
   data() {
     return {
-         featureName: this.groupFeat.featureName,
+         featureName: '',
          allData: [],
          binData1:[],
          binData2:[],
@@ -93,9 +93,9 @@ export default defineComponent({
   created() {
     // 获取任务管理模块传递过来的参数
     this.taskInfoParam = this.$route.params
-    console.log("taskInfoParam",this.taskInfoParam)
     this.getAllData();
   },
+
   methods: {
 
     open3(msg) {
@@ -108,7 +108,7 @@ export default defineComponent({
     getAllData(){
         let colNames = [];
         let label=null;
-        if(Object.keys(this.taskInfoParam).length==0){
+        if(Object.keys(this.taskInfoParam).length===0){
           colNames.push(this.groupFeat.featureName);
           colNames.push(this.observeFeat.featureName);
           label = this.label;
@@ -119,6 +119,7 @@ export default defineComponent({
         }
         console.log("后端表名：",label)
         console.log("后端列名：",colNames)
+       console.log(this.binData1)
         getSingleAnalyze("/api/singleFactorAnalyze",label,colNames.join(",")).then(response=>{ // 传递表名、分组列名、观察列名
             // 分析表格数据
             this.tableData = response.data.discreteVos;
@@ -140,7 +141,7 @@ export default defineComponent({
               this.open3("数据异常，分析失败！");
               return;
             }
-            console.log("aaaaa",this)
+
             // 饼状图数据
             for (const [key, value] of Object.entries(response.data.notDiscrete.binData)) {
               console.log("还没有初始化时：",this.binData1)

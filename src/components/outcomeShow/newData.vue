@@ -195,6 +195,7 @@ export default {
       this.dataColumn = this.columnName;
       this.allPage = this.dataChoose.total * 10;
       this.dataChooseNow = this.dataChoose.data;
+      console.log('dataChooseNow',this.dataChooseNow)
       // this.allPage2=this.dataNew.total*10;
       // this.dataNewNow=this.dataNew.data;
 
